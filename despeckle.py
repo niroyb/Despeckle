@@ -32,6 +32,13 @@ def median_lum_area(img, c, r):
     lums = map(luminosity, area)
     return median(lums)
 
+def test_median(img):
+    area = get_area(img, 0, 0)
+    lums = map(luminosity, area)
+    print area
+    print lums
+    print 'median', median(lums)
+
 def despeckle(img):
     res = Image.new('RGB', img.size)
     px_map = res.load()
@@ -50,20 +57,10 @@ def despeckle_fast(img):
     res = res.convert('L')
     # Apply median filter te despeckle
     res = res.filter(ImageFilter.MedianFilter)
-    return img
-
-def test_median(img):
-    area = get_area(img, 0, 0)
-    lums = map(luminosity, area)
-    print area
-    print lums
-    print 'median', median(lums)
+    return res
 
 def main():
     img = Image.open(IMG_IN)
-    #width, height = img.size
-    #im = img.load()
-    #test_median(img)
 
     clean_img = despeckle_fast(img)
     clean_img.save('despeckle_fast.png')
