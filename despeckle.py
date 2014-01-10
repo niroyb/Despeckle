@@ -2,13 +2,12 @@ import Image
 import ImageFilter
 from numpy import median
 
-#BLACK = (0,0,0)
-WHITE = (255, 255, 255)
+'''Filter that remove grain noise from an Image
+Requires PIL and NumPy'''
 
 IMG_IN  = r"test.png"
-#IMG_OUT = r"test_result.png"
-
-MAX_LUM = 220.0
+MAX_LUM = 220
+WHITE = (255, 255, 255)
 
 def luminosity(rgb, rcoeff=0.2126, gcoeff=0.7152, bcoeff=0.0722):
     return rcoeff*rgb[0] + gcoeff*rgb[1] + bcoeff*rgb[2]
@@ -18,7 +17,7 @@ def is_in_range(img, c, r):
     return c >= 0 and c < img.size[0] and r >= 0 and r < img.size[1]
 
 def get_area(img, c, r):
-    '''returns 3*3 pixels centered on x, y'''
+    '''returns at most 3*3 pixels centered on x, y'''
     ret = []
     for i in xrange(c-1, c+2):
         for j in xrange(r-1, r+2):
@@ -45,10 +44,13 @@ def despeckle(img):
     width, height = img.size
     for r in xrange(height):
         for c in xrange(width):
-            if median_lum_area(img, c, r) >= MAX_LUM:
+            lum = int(median_lum_area(img, c, r))
+            if lum >= MAX_LUM:
+                # Make high luminance pixels completely white
                 px_map[c,r] = WHITE
             else:
-                px_map[c,r] = img.getpixel((c,r))
+                # Apply grayscale luminance
+                px_map[c,r] = (lum, lum, lum)
     return res
 
 def despeckle_fast(img):
